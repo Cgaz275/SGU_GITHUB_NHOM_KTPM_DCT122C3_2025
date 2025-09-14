@@ -1,4 +1,4 @@
-# GITHUB_NHOM_KTPM_DCT122C3_2025
+# GITHUB NHÓM KIỂM THỬ PHẦN MỀM DCT122C3
 **Học phần:** Kiểm thử phần mềm
 
 **Giảng viên:** TS.Đỗ Như Tài
