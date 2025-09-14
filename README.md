@@ -1,9 +1,9 @@
-# GITHUB NHÓM KIỂM THỬ PHẦN MỀM DCT122C3
+# GITHUB NHÓM KIỂM THỬ PHẦN MỀM DCT122C3_SGU_2025
 **Học phần:** Kiểm thử phần mềm
 
 **Giảng viên:** TS.Đỗ Như Tài
 
-**Lớp:** DCT1222C3
+**Lớp:** DCT122C3
 
 **Danh sách thành viên nhóm:**
 - Nhóm trưởng: Châu Gia Anh - 3122411002
