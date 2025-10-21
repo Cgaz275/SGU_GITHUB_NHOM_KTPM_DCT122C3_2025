@@ -1,0 +1,236 @@
+openapi: 3.0.3
+info:
+  title: Coolstore services
+  description: |
+    [/apidoc.json](https://example.com)
+    
+    [coolstore-microservices project - Website](https://example.com)  
+
+    [Send email to coolstore-microservices project](mailto:coolstore-microservices-project@website.com)
+  version: 1.0.0
+
+servers:
+  - url: HTTP
+tags:
+  - name: CartService
+  - name: CatalogService
+  - name: InventoryService
+  - name: RatingService
+
+paths:
+  /cart/api/carts:
+    post:
+      tags: [CartService]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+      responses:
+        '201':
+          description: Cart created
+    put:
+      tags: [CartService]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+      responses:
+        '200':
+          description: Cart updated
+
+  /cart/api/carts/{cart_id}:
+    get:
+      tags: [CartService]
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cart details returned
+
+  /cart/api/carts/{cart_id}/checkout:
+    put:
+      tags: [CartService]
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Checkout completed
+
+  /cart/api/carts/{cart_id}/item/{product_id}:
+    delete:
+      tags: [CartService]
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Item removed
+
+  /catalog/api/products:
+    post:
+      tags: [CatalogService]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created
+          
+  /catalog/api/products/{current_page}/{high_price}:
+    get:
+      tags: [CatalogService]
+      parameters:
+        - name: current_page
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - name: high_price
+          in: path
+          required: true
+          schema:
+            type: number
+            example: 1000
+      responses:
+        '200':
+          description: List of products filtered by price
+
+
+  /catalog/api/products/{product_id}:
+    get:
+      tags: [CatalogService]
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product details returned
+
+  /inventory/api/availabilities:
+    get:
+      tags: [InventoryService]
+      responses:
+        '200':
+          description: Inventory list returned
+
+  /inventory/api/availabilities/{id}:
+    get:
+      tags: [InventoryService]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Availability returned
+
+  /inventory/api/inventory/migrate:
+    post:
+      tags: [InventoryService]
+      responses:
+        '200':
+          description: Inventory migrated
+
+  /rating/api/ratings:
+    get:
+      tags: [RatingService]
+      responses:
+        '200':
+          description: Ratings list returned
+    post:
+      tags: [RatingService]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+      responses:
+        '201':
+          description: Rating created
+    put:
+      tags: [RatingService]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rating'
+      responses:
+        '200':
+          description: Rating updated
+
+  /rating/api/ratings/{product_id}:
+    get:
+      tags: [RatingService]
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Rating found
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+          format: float
+    Rating:
+      type: object
+      properties:
+        productId:
+          type: string
+        score:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
