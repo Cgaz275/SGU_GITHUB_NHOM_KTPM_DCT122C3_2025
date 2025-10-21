@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - 'v*'   # chạy thêm khi có tag kiểu v1.0.0
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+
+      # ----------------------------
+      # 🔽 THÊM PHẦN TẠO CHANGELOG
+      # ----------------------------
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Install GitHub Changelog Generator
+        run: gem install github_changelog_generator
+
+      - name: Generate CHANGELOG.md
+        env:
+          CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          github_changelog_generator \
+            -u ${{ github.repository_owner }} \
+            -p $(basename ${{ github.repository }}) \
+            --output CHANGELOG.md
+
+      - name: Commit and push CHANGELOG.md
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "chore: update changelog [skip ci]" || echo "No changes to commit"
+          git push
