@@ -3,7 +3,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "packages/evershop/dist",
   "installCommand": "npm install",
-  "framework": "other",
+  "framework": "express",
   "env": {
     "NODE_ENV": "production"
   },
