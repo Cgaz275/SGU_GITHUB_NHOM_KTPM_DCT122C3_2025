@@ -543,7 +543,7 @@ Xem file [LICENSE](./LICENSE) để chi tiết.
 
 ---
 
-## 🎯 Bắt Đầu Ngay
+## 🎯 Bắt Đầu Triển Khai
 
 ### 📋 Checklist Bắt Đầu
 
@@ -589,7 +589,7 @@ Xem file [LICENSE](./LICENSE) để chi tiết.
 **Q: Tôi nên phát triển ở thư mục nào?**
 > A: Luôn phát triển ở `DOAN/EVERSHOP/evershop`. Chỉ tham khảo `FullBase/evershop-dev`.
 
-**Q: Làm cách nào để cập nh��t module từ FullBase?**
+**Q: Làm cách nào để cập nhật module từ FullBase?**
 > A: Xem hướng dẫn chi tiết ở [SYNC_FROM_FULLBASE.md](./evershop/SYNC_FROM_FULLBASE.md).
 
 **Q: Cơ sở dữ liệu của tôi không kết nối được?**
@@ -632,22 +632,3 @@ DOAN/EVERSHOP/
      └─ package.json         (Dependencies)
 ```
 
----
-
-<div align="center">
-
-### 🎉 Sẵn Sàng Bắt Đầu?
-
-👉 **Chuyển đến [DOAN/EVERSHOP/evershop/README.md](./evershop/README.md)**
-
-hoặc
-
-👉 **Bắt Đầu Thiết Lập với [SETUP.md](./evershop/SETUP.md)**
-
----
-
-Made with ❤️ for Software Testing Course
-
-**DOAN/EVERSHOP - 2025**
-
-</div>
