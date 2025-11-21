@@ -21,7 +21,7 @@ This document outlines the standardized CI/CD and development process for the Ev
 
 ```
 DOAN/EVERSHOP/
-├── evershop/                          # Main deployment folder (this project)
+├── ShoesStore_Evershop/               # Main deployment folder (this project)
 │   ├── packages/
 │   │   ├── evershop/                 # Core application
 │   │   ├── postgres-query-builder/   # Database utilities
@@ -39,7 +39,7 @@ DOAN/EVERSHOP/
 
 ### Key Folders
 
-- **DOAN/EVERSHOP/evershop**: Main deployment target (this folder)
+- **DOAN/EVERSHOP/ShoesStore_Evershop**: Main deployment target (this folder)
   - Gradually sync modules from FullBase
   - All deployments originate from here
   - Controlled via NX workspace
@@ -195,7 +195,7 @@ The `.github/workflows/ci.yml` automatically runs:
 On PR to main or push to modules/*:
   ├── Lint (non-blocking warning)
   ├── Unit Tests (required)
-  ├── Build (required)
+  ���── Build (required)
   └── Deploy to Vercel Preview (for PRs)
 
 On merge to main:
@@ -434,7 +434,7 @@ Each package has a `project.json`:
 ```bash
 # 1. Clone the repository
 git clone https://github.com/Cgaz275/NHOM_KTPM_DCT122C3_2025.git
-cd DOAN/EVERSHOP/evershop
+cd DOAN/EVERSHOP/ShoesStore_Evershop
 
 # 2. Install dependencies
 npm install

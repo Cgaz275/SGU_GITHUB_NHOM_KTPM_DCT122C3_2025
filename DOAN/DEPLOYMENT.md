@@ -70,7 +70,7 @@ Live Website
 2. Select your project
 3. Verify settings:
    - Framework: **Other**
-   - Root Directory: **DOAN/EVERSHOP/evershop**
+   - Root Directory: **DOAN/EVERSHOP/ShoesStore_Evershop**
    - Build Command: **npm run build**
    - Output Directory: **packages/evershop/dist**
 
