@@ -1,23 +1,37 @@
-name: Github build
+name: Github build and test
 
-on: [pull_request]
+on: [pull_request, push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ '20', '22']
+        node: ['20', '22']
     name: Node ${{ matrix.node }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
       - name: Setup node js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
+      
       - run: npm install -g npm@9
+      
       - run: npm install
-      - run: npm run compile
-      - run: npm run compile:db
-      - run: npm run test
+      
+      - name: Lint affected
+        run: npm run nx -- affected:lint --base=origin/main
+      
+      - name: Compile affected
+        run: npm run nx -- affected:build --base=origin/main
+      
+      - name: Test affected
+        run: npm run test -- --testPathPattern="dist" --maxWorkers=2
+      
+      - name: Full build
+        run: npm run compile && npm run compile:db && npm run build

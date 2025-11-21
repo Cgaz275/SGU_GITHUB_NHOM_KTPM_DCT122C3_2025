@@ -54,7 +54,7 @@ docker ps | grep postgres
 
 # Connection details:
 # Host: localhost
-# Port: 5432
+# Port: 5433
 # User: postgres
 # Password: postgres
 # Database: evershop

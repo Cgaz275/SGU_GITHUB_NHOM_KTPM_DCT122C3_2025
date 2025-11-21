@@ -1,0 +1,23 @@
+{
+  "name": "@evershop/evershop",
+  "version": "2.1.0",
+  "type": "module",
+  "description": "EverShop main application package",
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "swc ./src/ -d dist/ --config-file .swcrc --copy-files --strip-leading-paths",
+    "test": "echo 'Tests will be added'",
+    "compile": "swc ./src/ -d dist/ --config-file .swcrc --copy-files --strip-leading-paths"
+  },
+  "dependencies": {
+    "@evershop/postgres-query-builder": "workspace:*"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.7.7",
+    "@swc/core": "^1.11.29",
+    "typescript": "^5.8.3"
+  }
+}

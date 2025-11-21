@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run compile && npm run compile:db && npm run build",
   "outputDirectory": "packages/evershop/dist",
   "installCommand": "npm install",
   "framework": "express",

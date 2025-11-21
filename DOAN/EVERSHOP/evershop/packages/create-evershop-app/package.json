@@ -1,0 +1,12 @@
+{
+  "name": "create-evershop-app",
+  "version": "2.1.0",
+  "type": "module",
+  "description": "CLI tool to create new EverShop applications",
+  "bin": {
+    "create-evershop-app": "./bin/index.js"
+  },
+  "scripts": {
+    "test": "echo 'CLI tests'"
+  }
+}

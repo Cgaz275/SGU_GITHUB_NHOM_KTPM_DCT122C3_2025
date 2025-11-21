@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+.next/
+out/
+
+# Development
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig.local
+
+# Testing
+coverage/
+.nyc_output/
+jest-coverage/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Cache
+.cache/
+.eslintcache
+.prettier-cache
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# Database
+.evershop/
+*.sqlite
+*.db
+
+# Media/uploads
+public/uploads/
+public/media/
+
+# Environment
+.env
+.env.*.local
