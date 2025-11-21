@@ -550,10 +550,9 @@ docker-compose up -d
 
 ### Môn Học
 - **Tên Môn**: Kiểm Thử Phần Mềm (Software Testing)
-- **Mã Môn**: DCT122C3
-- **Lớp**: 2025
+- **Lớp**: DCT122C3
 - **Trường**: Trường Đại Học Sài Gòn
-
+- **GVHD**: TS. Đỗ Như Tài
 ---
 
 ## 📄 Giấy Phép
