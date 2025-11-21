@@ -84,8 +84,8 @@ DOAN/EVERSHOP/
 │       ├── README.md                   # Hướng dẫn FullBase
 │       └── package.json                # Phụ thuộc dự án
 │
-└── evershop/                           # ��� Dự Án Triển Khai (Deployment Root)
-    ├── README.md                       # Hướng d��n chi tiết dự án
+└── evershop/                           # Dự Án Triển Khai (Deployment Root)
+    ├── README.md                       # Hướng dẫn chi tiết dự án
     ├── SETUP.md                        # Hướng dẫn thiết lập môi trường
     ├── WORKFLOW.md                     # Quy trình làm việc
     ├── DEPLOYMENT.md                   # Hướng dẫn triển khai Vercel
@@ -104,7 +104,7 @@ DOAN/EVERSHOP/
     │   └── create-evershop-app/
     │
     ├── extensions/                     # Phần mở rộng (tùy chỉnh)
-    ├── themes/                         # Chủ đề giao diện (t��y chỉnh)
+    ├── themes/                         # Chủ đề giao diện (tùy chỉnh)
     ├── public/                         # Tài nguyên tĩnh
     ├── .github/workflows/              # Quy trình CI/CD
     │
