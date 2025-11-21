@@ -3,6 +3,10 @@
   "version": "2.1.0",
   "type": "module",
   "description": "A shopping cart platform with Express, React and Postgres",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "workspaces": [
     "packages/*",
     "extensions/*"
