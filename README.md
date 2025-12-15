@@ -18,21 +18,13 @@
 - DOAN\EVERSHOP\FullBase là nơi chứa source gốc của dự án được tái sử dụng
 - DOAN\EVERSHOP\ShoesStore_Evershop là root project để deploy án chính với Docker & GitHub Container Registry
   
+## Tóm tắt nội dung đồ án
 
-# 📦 DOAN/EVERSHOP - Hướng Dẫn Dự Án
-
-<div align="center">
-
-![EverShop Logo](https://raw.githubusercontent.com/evershopcommerce/evershop/dev/.github/images/logo-green.png)
-
-### Dự Án E-Commerce Evershop tái sử dụng với Docker & GitHub Container Registry
-
-[![CI Pipeline](https://github.com/Cgaz275/NHOM_KTPM_DCT122C3_2025/actions/workflows/ci.yml/badge.svg)](https://github.com/Cgaz275/NHOM_KTPM_DCT122C3_2025/actions)
-[![License: GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-
-**Nền tảng thương mại điện tử hiện đại, được xây dựng bằng TypeScript, Express, React và PostgreSQL**
-
-</div>
+```
+Dự án tái sử dụng EverShop theo kiến trúc module, tách rõ mã nguồn tham chiếu và dự án triển khai, tích hợp kiểm thử tự động trong CI/CD, 
+và triển khai bằng Docker image thông qua GitHub Container Registry để đảm bảo chất lượng, tính ổn định và khả năng mở rộng đồng thời xây dựng
+phương án kiểm thử.
+```
 
 ---
 
@@ -45,7 +37,6 @@
 5. [Chi Tiết Các Thư Mục](#chi-tiết-các-thư-mục)
 6. [Quy Trình Phát Triển](#quy-trình-phát-triển)
 7. [Triển Khai với Docker & GitHub Container](#triển-khai-với-docker--github-container)
-8. [Tài Liệu Tham Khảo](#tài-liệu-tham-khảo)
 
 ---
 
