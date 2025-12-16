@@ -156,9 +156,9 @@ function renderProduction(request, response) {
   });
   import(pathToFileURL(serverIndexPath).toString())
     .then((module) => {
-      const source = processPreloadImages(
-        module.default(assets.js, cssList, safeContextValue, langCode)
-      );
+      const rendered = module.default(assets.js, cssList, safeContextValue, langCode);
+      const html = typeof rendered === 'string' ? rendered : '';
+      const source = processPreloadImages(html);
       response.send(source);
     })
     .catch((e) => {

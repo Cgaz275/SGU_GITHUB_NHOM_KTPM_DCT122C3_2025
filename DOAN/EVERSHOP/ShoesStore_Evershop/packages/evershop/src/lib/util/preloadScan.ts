@@ -44,6 +44,7 @@ function extractPreloadImages(html: string): PreloadImage[] {
 
 function generatePreloadLinks(images: PreloadImage[]): string {
   return images
+    .filter((image) => image && image.src)
     .map((image) => {
       const attributes = [
         'rel="preload"',

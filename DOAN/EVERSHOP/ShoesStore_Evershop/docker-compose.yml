@@ -48,20 +48,6 @@ services:
     networks:
       - evershop-network
 
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    container_name: evershop-redis
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - evershop-network
-
 networks:
   evershop-network:
     name: evershop-network

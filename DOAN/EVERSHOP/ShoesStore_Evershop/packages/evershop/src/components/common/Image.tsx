@@ -28,6 +28,10 @@ export function Image({
   objectFit = 'unset',
   ...props
 }: ImageProps): React.ReactElement | null {
+  if (!src) {
+    return null;
+  }
+
   const generateSrcSet = (): string => {
     const imageSizes = parseImageSizes(sizes);
     // Don't upscale beyond 3 times the original width, but be smarter about filtering

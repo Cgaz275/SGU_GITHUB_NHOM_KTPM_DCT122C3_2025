@@ -1,5 +1,7 @@
 node_modules
 .env
+.env.local
+.env.*.local
 dist
 !packages/create-evershop-app/sample/extensions/sample/dist
 !packages/create-evershop-app/sample/themes/sample/dist
@@ -22,7 +24,10 @@ npm-debug.log
 .DS_Store
 .log
 coverage
-cypress
+cypress/videos
+cypress/screenshots
+cypress/downloads
+cypress/.env.local
 .turbo
 /config
 /packages/evershop/config
