@@ -185,9 +185,10 @@ jobs:
           exit 1
 
       - name: Run Cypress E2E tests
-        run: npm run test:e2e:headless
+        run: npm run test:e2e:headless -- --record
         env:
           CYPRESS_BASE_URL: http://localhost:3000
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
       - name: Upload Cypress screenshots
         if: failure()
