@@ -28,7 +28,7 @@ export function Image({
   objectFit = 'unset',
   ...props
 }: ImageProps): React.ReactElement | null {
-  if (!src) {
+  if (!src || typeof src !== 'string') {
     return null;
   }
 

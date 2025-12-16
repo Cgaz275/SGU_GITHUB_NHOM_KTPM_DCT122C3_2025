@@ -1,8 +1,8 @@
 import React from 'react';
 
 interface LogoProps {
-  themeConfig: {
-    logo: {
+  themeConfig?: {
+    logo?: {
       src?: string;
       alt?: string;
       width?: number;
@@ -11,10 +11,10 @@ interface LogoProps {
   };
 }
 export default function Logo({
-  themeConfig: {
-    logo: { src, alt = 'Evershop', width = 128, height = 128 }
-  }
+  themeConfig = {}
 }: LogoProps) {
+  const logo = themeConfig?.logo || {};
+  const { src, alt = 'Evershop', width = 128, height = 128 } = logo;
   return (
     <div className="logo md:ml-0 flex justify-center items-center">
       {src && (

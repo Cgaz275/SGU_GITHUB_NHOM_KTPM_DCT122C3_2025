@@ -14,6 +14,11 @@ export const StaticImage: React.FC<StaticImageProps> = ({
   const { graphqlResponse } = useAppState();
   const baseUrl = graphqlResponse?.pageMeta?.baseUrl || '';
 
+  // Guard against missing subPath
+  if (!subPath || typeof subPath !== 'string') {
+    return null;
+  }
+
   const imagePath = useMemo(() => {
     const formattedSubPath = subPath.startsWith('/')
       ? subPath.substring(1)
