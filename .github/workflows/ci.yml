@@ -202,8 +202,29 @@ jobs:
           echo "PostgreSQL failed to start"
           exit 1
 
+      - name: Setup database
+        run: npm run setup
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: evershop
+          NODE_ENV: development
+
       - name: Start application
-        run: npm run start &
+        run: |
+          nohup npm run start > app.log 2>&1 &
+          APP_PID=$!
+          echo "App started with PID: $APP_PID"
+          sleep 5
+          if ! kill -0 $APP_PID 2>/dev/null; then
+            echo "❌ Application failed to start!"
+            echo "=== App logs ==="
+            cat app.log
+            exit 1
+          fi
+          echo "✅ Application process is running"
         env:
           DB_HOST: localhost
           DB_PORT: 5432
@@ -212,11 +233,18 @@ jobs:
           DB_NAME: evershop
           NODE_ENV: development
           PORT: 3000
-          HOST: 0.0.0.0 #Force server listen trên IPv4 bằng env HOST
-
+          HOST: 0.0.0.0
 
       - name: Wait for app
-        run: npx wait-on http://localhost:3000 -t 120000 --interval 2000
+        run: |
+          echo "Waiting for app to be ready on http://localhost:3000..."
+          npx wait-on http://localhost:3000 -t 120000 --interval 2000 || {
+            echo "❌ App failed to respond!"
+            echo "=== App logs ==="
+            tail -100 app.log
+            exit 1
+          }
+          echo "✅ App is ready!"
 
       - name: Run Cypress
         run: npm run test:e2e:headless -- --record
