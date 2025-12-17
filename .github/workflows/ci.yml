@@ -11,18 +11,18 @@ on:
       - 'modules/**'
 
 env:
-REGISTRY: ghcr.io
-IMAGE_NAME: ${{ github.repository }}
-# Đường dẫn tương đối đến project Evershop
-PROJECT_DIR: DOAN/EVERSHOP/ShoesStore_Evershop
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  # Đường dẫn tương đối đến project Evershop
+  PROJECT_DIR: DOAN/EVERSHOP/ShoesStore_Evershop
 
 permissions:
-contents: read
-packages: write
+  contents: read
+  packages: write
 
 concurrency:
-group: ${{ github.workflow }}-${{ github.ref }}
-cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
 lint:
