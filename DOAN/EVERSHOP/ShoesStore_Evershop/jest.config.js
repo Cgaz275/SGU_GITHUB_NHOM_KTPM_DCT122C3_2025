@@ -1,6 +1,12 @@
 export default {
   testEnvironment: "node",
   collectCoverage: false,
+  preset: 'ts-jest/presets/default-esm',
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
+      useESM: true
+    }]
+  },
   moduleNameMapper: {
     '^@evershop/postgres-query-builder$': '<rootDir>/packages/postgres-query-builder/dist/index.js',
     '^@evershop/postgres-query-builder/(.*)$': '<rootDir>/packages/postgres-query-builder/dist/$1',
@@ -18,5 +24,6 @@ export default {
     "services/login",
     "services/logout",
     "services/session"
-  ]
+  ],
+  extensionsToTreatAsEsm: ['.ts', '.tsx']
 };
