@@ -10,11 +10,11 @@ export function CategoryInfo() {
     <>
       <Area id="beforeCategoryInfo" noOuter />
       <div className="mb-2 md:mb-5 category__general">
-        {image && image.url && (
+        {image && (
           <Image
             className="category__image mb-5"
             src={image.url}
-            alt={(image.alt || name) as string}
+            alt={image.alt || name}
             width={1800}
             height={1029}
             priority={true}

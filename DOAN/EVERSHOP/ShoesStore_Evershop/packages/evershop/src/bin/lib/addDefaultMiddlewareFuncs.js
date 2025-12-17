@@ -24,8 +24,7 @@ import { getTailwindConfig } from '../../lib/webpack/util/getTailwindConfig.js';
 import { getAdminSessionCookieName } from '../../modules/auth/services/getAdminSessionCookieName.js';
 import { getCookieSecret } from '../../modules/auth/services/getCookieSecret.js';
 import { getFrontStoreSessionCookieName } from '../../modules/auth/services/getFrontStoreSessionCookieName.js';
-// No-op function to replace cms pageMetaInfo dependency
-const setPageMetaInfo = () => {};
+import { setPageMetaInfo } from '../../modules/cms/services/pageMetaInfo.js';
 import { getEnabledExtensions } from '../extension/index.js';
 import { findRoute } from './findRoute.js';
 
@@ -129,6 +128,54 @@ export function addDefaultMiddlewareFuncs(app) {
     }
   };
   app.use(sessionMiddleware);
+
+  app.use(async (request, response, next) => {
+    // Get the request path, remove '/' from both ends
+    const path = request.originalUrl.split('?')[0].replace(/^\/|\/$/g, '');
+    // If the current route is already set, or the path contains .hot-update.json, .hot-update.js skip this middleware
+    if (request.currentRoute || path.includes('.hot-update')) {
+      return next();
+    }
+    // Also skip if we are running in the test mode
+    if (process.env.NODE_ENV === 'test') {
+      return next();
+    }
+
+    // Find the matched rewrite rule base on the request path
+    const rewriteRule = await select()
+      .from('url_rewrite')
+      .where('request_path', '=', `/${path}`)
+      .load(pool);
+
+    if (rewriteRule) {
+      // Find the route
+      const routes = getRoutes();
+      const route = routes.find((r) => {
+        const regexp = pathToRegexp(r.path);
+        const match = regexp.exec(rewriteRule.target_path);
+        if (match) {
+          request.locals = request.locals || {};
+          request.locals.customParams = {};
+          const keys = [];
+          pathToRegexp(r.path, keys);
+          keys.forEach((key, index) => {
+            request.locals.customParams[key.name] = match[index + 1];
+          });
+          return true;
+        }
+        return false;
+      });
+      // Get the current http method
+      const method = request.method.toUpperCase();
+      // Check if the route supports the current http method
+      if (route && route.method.includes(method)) {
+        request.currentRoute = route;
+      }
+      return next();
+    } else {
+      return next();
+    }
+  });
 
   app.use(async (request, response, next) => {
     if (!isDevelopmentMode()) {

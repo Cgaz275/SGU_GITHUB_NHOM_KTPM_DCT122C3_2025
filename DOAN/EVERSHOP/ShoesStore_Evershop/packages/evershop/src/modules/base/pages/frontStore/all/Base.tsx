@@ -15,8 +15,8 @@ import React from 'react';
 interface BaseProps {
   myCart: CartData;
   customer: Customer;
-  themeConfig?: {
-    copyRight?: string;
+  themeConfig: {
+    copyRight: string;
   };
   addMineCartItemApi: string;
   loginApi: string;
@@ -26,7 +26,7 @@ interface BaseProps {
 export default function Base({
   myCart,
   customer,
-  themeConfig = {},
+  themeConfig,
   addMineCartItemApi,
   loginApi,
   logoutApi,
@@ -49,7 +49,7 @@ export default function Base({
         <main className="content">
           <Area id="content" noOuter />
         </main>
-        <Footer copyRight={themeConfig?.copyRight || '© 2022 Evershop. All Rights Reserved.'} />
+        <Footer copyRight={themeConfig.copyRight} />
       </CartProvider>
     </CustomerProvider>
   );

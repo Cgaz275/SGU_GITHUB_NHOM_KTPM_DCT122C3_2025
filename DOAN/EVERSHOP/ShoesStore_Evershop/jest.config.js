@@ -1,6 +1,5 @@
 export default {
   testEnvironment: "node",
-  collectCoverage: false,
   preset: 'ts-jest/presets/default-esm',
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
@@ -29,5 +28,20 @@ export default {
     "services/logout",
     "services/session"
   ],
-  extensionsToTreatAsEsm: ['.ts', '.tsx']
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  collectCoverageFrom: [
+    "packages/evershop/src/modules/**/*.{ts,tsx,js}",
+    "!packages/evershop/src/modules/**/tests/**",
+    "!packages/evershop/src/modules/**/*.test.{ts,tsx,js}",
+    "!packages/evershop/dist/**"
+  ],
+  coverageDirectory: "<rootDir>/coverage",
+  coverageReporters: ["text", "text-summary", "html", "lcov", "json"],
+  coveragePathIgnorePatterns: [
+    "/node_modules/",
+    "packages/evershop/dist",
+    "services/login",
+    "services/logout",
+    "services/session"
+  ]
 };

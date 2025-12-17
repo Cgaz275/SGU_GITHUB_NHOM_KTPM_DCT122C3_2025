@@ -10,15 +10,10 @@ import isDevelopmentMode from '../../../../lib/util/isDevelopmentMode.js';
 import isProductionMode from '../../../../lib/util/isProductionMode.js';
 import { getRouteBuildPath } from '../../../../lib/webpack/getRouteBuildPath.js';
 import { getEnabledWidgets } from '../../../../lib/widget/widgetManager.js';
-// Stub: cms module removed - return empty array
-const loadWidgetInstances = async () => [];
+import { loadWidgetInstances } from '../../../cms/services/widget/loadWidgetInstances.js';
 import { getContextValue } from '../../services/contextHelper.js';
 
 export default async (request, response, next) => {
-   // 🔥 FIX
-  if (!request.body) {
-    request.body = {};
-  }
   let query;
   getContextValue(request, 'dummy', null);
   if (isDevelopmentMode()) {
@@ -32,9 +27,6 @@ export default async (request, response, next) => {
     } else {
       // Get the 'query.graphql' from webpack compiler
       route = request.locals.webpackMatchedRoute;
-    }
-    if (!route || !route.webpackMiddleware) {
-      return next();
     }
     const devMiddleware = route.webpackMiddleware;
     const { outputFileSystem } = devMiddleware.context;
@@ -58,9 +50,6 @@ export default async (request, response, next) => {
       route = request.currentRoute;
     }
 
-    if (!route) {
-      return next();
-    }
     const subPath = getRouteBuildPath(route);
     query = readFileSync(
       path.resolve(CONSTANTS.BUILDPATH, subPath, 'server/query.graphql'),
