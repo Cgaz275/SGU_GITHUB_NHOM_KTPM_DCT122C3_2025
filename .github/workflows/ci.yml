@@ -202,16 +202,6 @@ jobs:
           echo "PostgreSQL failed to start"
           exit 1
 
-      - name: Setup database
-        run: npx evershop install
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_NAME: evershop
-          NODE_ENV: development
-
       - name: Start application
         run: |
           nohup npm run start > app.log 2>&1 &
