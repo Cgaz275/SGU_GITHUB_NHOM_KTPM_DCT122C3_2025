@@ -212,6 +212,7 @@ jobs:
           browser: chrome
           record: true
         env:
+          HUSKY: 0
           DB_HOST: localhost
           DB_PORT: 5432
           DB_USER: postgres
