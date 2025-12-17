@@ -1,68 +1,68 @@
-# Docker Setup & Management
+# Hướng Dẫn Docker & Quản Lý
 
-Complete guide for running EverShop with Docker locally and in CI/CD pipeline.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Prerequisites](#prerequisites)
-3. [Quick Start](#quick-start)
-4. [Docker Compose Services](#docker-compose-services)
-5. [Common Commands](#common-commands)
-6. [Dockerfile Explanation](#dockerfile-explanation)
-7. [Environment Variables](#environment-variables)
-8. [Network & Port Configuration](#network--port-configuration)
-9. [Troubleshooting](#troubleshooting)
-10. [Production Deployment](#production-deployment)
+Hướng dẫn hoàn chỉnh để chạy EverShop với Docker trên máy cục bộ và trong pipeline CI/CD.
 
 ---
 
-## Overview
+## Mục Lục
 
-### Why Docker?
+1. [Tổng Quan](#tổng-quan)
+2. [Yêu Cầu Hệ Thống](#yêu-cầu-hệ-thống)
+3. [Bắt Đầu Nhanh](#bắt-đầu-nhanh)
+4. [Các Dịch Vụ Docker Compose](#các-dịch-vụ-docker-compose)
+5. [Lệnh Thường Dùng](#lệnh-thường-dùng)
+6. [Giải Thích Dockerfile](#giải-thích-dockerfile)
+7. [Biến Môi Trường](#biến-môi-trường)
+8. [Cấu Hình Mạng & Cổng](#cấu-hình-mạng--cổng)
+9. [Khắc Phục Sự Cố](#khắc-phục-sự-cố)
+10. [Triển Khai Production](#triển-khai-production)
 
-Docker provides:
-- **Consistency**: Same environment locally and in production
-- **Isolation**: No conflicts with system dependencies
-- **Scalability**: Easy to scale and deploy multiple instances
-- **CI/CD Integration**: Automated testing and deployment
-- **Team Collaboration**: Standardized development environment
+---
 
-### Architecture
+## Tổng Quan
+
+### Tại Sao Dùng Docker?
+
+Docker cung cấp:
+- **Tính Nhất Quán**: Môi trường giống hệt trên máy cục bộ và production
+- **Cách Ly Hệ Thống**: Không xung đột với các dependencies
+- **Khả Năng Mở Rộng**: Dễ dàng mở rộng và triển khai nhiều instance
+- **Tích Hợp CI/CD**: Kiểm tra và triển khai tự động
+- **Hợp Tác Nhóm**: Môi trường phát triển chuẩn hóa
+
+### Kiến Trúc
 
 ```
 ┌─────────────────────────────────────┐
 │      Docker Container               │
 ├─────────────────────────────────────┤
 │  EverShop Application (Node.js)     │
-│  - Port: 3000                       │
+│  - Cổng: 3000                       │
 │  - Node: v20 Alpine                 │
 └──────────────┬──────────────────────┘
                │
-        ┌──────┴──────┬────────────┐
-        │             │            │
-     PostgreSQL     Redis      Network
-    (Port 5432)   (Port 6379)  (evershop-network)
+               ├─────────────────┐
+               │                 │
+           PostgreSQL       Network
+          (Cổng 5432)  (evershop-network)
 ```
 
 ---
 
-## Prerequisites
+## Yêu Cầu Hệ Thống
 
-### Required
+### Bắt Buộc
 
-- **Docker**: 20.10+ ([Download](https://www.docker.com/products/docker-desktop))
-- **Docker Compose**: 2.0+ (comes with Docker Desktop)
-- **Git**: For cloning repository
+- **Docker**: 20.10+ ([Tải xuống](https://www.docker.com/products/docker-desktop))
+- **Docker Compose**: 2.0+ (đi kèm Docker Desktop)
+- **Git**: Để sao chép repository
 
-### Optional
+### Tùy Chọn
 
-- **Docker Registry**: For pushing images (GitHub Container Registry, Docker Hub)
-- **Make**: For simplified commands (macOS/Linux only)
+- **Docker Registry**: Để đẩy images (GitHub Container Registry, Docker Hub)
+- **Make**: Cho lệnh đơn giản hóa (macOS/Linux)
 
-### Verify Installation
+### Xác Minh Cài Đặt
 
 ```bash
 docker --version
@@ -70,7 +70,7 @@ docker-compose --version
 docker ps
 ```
 
-Expected output:
+Kết quả mong đợi:
 ```
 Docker version 24.0.0, build ...
 Docker Compose version 2.20.0, build ...
@@ -78,542 +78,500 @@ Docker Compose version 2.20.0, build ...
 
 ---
 
-## Quick Start
+## Bắt Đầu Nhanh
 
-### 1. Start Services (One Command)
+### 1. Khởi Động Dịch Vụ (Một Lệnh)
 
 ```bash
-# From DOAN/EVERSHOP/ShoesStore_Evershop directory
+# Từ thư mục DOAN/EVERSHOP/ShoesStore_Evershop
 docker-compose up -d
 
-# Wait for startup (usually 10-15 seconds)
+# Chờ khởi động (thường 10-15 giây)
 docker-compose logs -f app
 ```
 
-### 2. Verify Services Running
+### 2. Xác Minh Dịch Vụ Chạy
 
 ```bash
 docker-compose ps
 
-# Expected output:
+# Kết quả mong đợi:
 # NAME             STATUS
 # evershop-app     Up (healthy)
 # evershop-db      Up (healthy)
-# evershop-redis   Up (healthy)
 ```
 
-### 3. Access Application
+### 3. Truy Cập Ứng Dụng
 
-- **Web App**: http://localhost:3000
-- **Database**: localhost:5432 (PostgreSQL)
-- **Cache**: localhost:6379 (Redis)
+- **Ứng Dụng Web**: http://localhost:3000
+- **Cơ Sở Dữ Liệu**: localhost:5432 (PostgreSQL)
 
-### 4. Stop Services
+### 4. Dừng Dịch Vụ
 
 ```bash
 docker-compose down
 
-# Or with volume cleanup
+# Hoặc với dọn dẹp volume
 docker-compose down -v
 ```
 
 ---
 
-## Docker Compose Services
+## Các Dịch Vụ Docker Compose
 
-### Service: app (EverShop Application)
+### Dịch Vụ: app (Ứng Dụng EverShop)
 
 ```yaml
 service: app
-image: Built from Dockerfile
+image: Được tạo từ Dockerfile
 port: 3000:3000
-command: npm run dev
+command: npm run start
 volumes: 
-  - Current directory mounted for hot reload
+  - Thư mục hiện tại để cập nhật nhanh
 environment:
   DB_HOST: database
   DB_USER: postgres
   DB_PASSWORD: postgres
-  DB_NAME: evershop
-  NODE_ENV: development
+  DB_NAME: postgres
+  NODE_ENV: production
 ```
 
-**Features**:
-- ✅ Hot reload (file changes reflected immediately)
-- ✅ Node modules preserved with volume
-- ✅ Health check enabled
-- ✅ Depends on PostgreSQL startup
+**Tính Năng**:
+- ✅ Cập nhật nhanh (thay đổi file được phản ánh ngay lập tức)
+- ✅ Node modules được lưu với volume
+- ✅ Kiểm tra sức khỏe được bật
+- ✅ Phụ thuộc vào PostgreSQL khởi động
 
-### Service: database (PostgreSQL)
+### Dịch Vụ: database (PostgreSQL)
 
 ```yaml
 service: database
-image: postgres:16-alpine
+image: postgres:16
 port: 5432:5432
-volumes: postgres-data (persistent)
+volumes: postgres-data (dữ liệu lâu dài)
 environment:
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: evershop
-healthcheck: Checks every 10 seconds
+  POSTGRES_DB: postgres
 ```
 
-**Features**:
-- ✅ Alpine image (lightweight, ~85MB)
-- ✅ Persistent data storage
-- ✅ Health check enabled
-- ✅ Automatic startup on container restart
-
-### Service: redis (Cache/Session Store)
-
-```yaml
-service: redis
-image: redis:7-alpine
-port: 6379:6379
-command: redis-server
-healthcheck: Checks every 10 seconds
-```
-
-**Features**:
-- ✅ Session caching
-- ✅ Optional but recommended
-- ✅ Lightweight (~10MB)
+**Tính Năng**:
+- ✅ Lưu trữ dữ liệu lâu dài
+- ✅ Khởi động tự động khi container restart
 
 ---
 
-## Common Commands
+## Lệnh Thường Dùng
 
-### Start & Stop
+### Khởi Động & Dừng
 
 ```bash
-# Start all services in background
+# Khởi động tất cả dịch vụ nền
 docker-compose up -d
 
-# Start with logging output
+# Khởi động với xuất log
 docker-compose up
 
-# Stop services (keep volumes)
+# Dừng dịch vụ (giữ volumes)
 docker-compose stop
 
-# Stop and remove containers
+# Dừng và xóa containers
 docker-compose down
 
-# Stop and remove everything (including data!)
+# Dừng và xóa mọi thứ (bao gồm dữ liệu!)
 docker-compose down -v
 ```
 
-### View Logs
+### Xem Nhật Ký
 
 ```bash
-# View all service logs
+# Xem nhật ký tất cả dịch vụ
 docker-compose logs
 
-# View app logs continuously
+# Xem nhật ký app liên tục
 docker-compose logs -f app
 
-# View specific service
+# Xem dịch vụ cụ thể
 docker-compose logs -f database
 
-# Last 100 lines
+# 100 dòng cuối cùng
 docker-compose logs --tail=100 app
-
-# Follow specific service in real-time
-docker-compose logs -f app | grep "error"
 ```
 
-### Service Management
+### Quản Lý Dịch Vụ
 
 ```bash
-# Restart all services
+# Khởi động lại tất cả dịch vụ
 docker-compose restart
 
-# Restart specific service
+# Khởi động lại dịch vụ cụ thể
 docker-compose restart app
 
-# Rebuild image
+# Xây dựng lại image
 docker-compose build
 
-# Build and start
+# Xây dựng và khởi động
 docker-compose up -d --build
 
-# Pull latest base images
-docker-compose pull
-
-# Check service status
+# Kiểm tra trạng thái dịch vụ
 docker-compose ps
 ```
 
-### Database Operations
+### Hoạt Động Cơ Sở Dữ Liệu
 
 ```bash
-# Connect to PostgreSQL
-docker-compose exec database psql -U postgres -d evershop
+# Kết nối tới PostgreSQL
+docker-compose exec database psql -U postgres -d postgres
 
-# List all databases
+# Liệt kê tất cả cơ sở dữ liệu
 docker-compose exec database psql -U postgres -l
 
-# Backup database
-docker-compose exec database pg_dump -U postgres evershop > backup.sql
+# Sao lưu cơ sở dữ liệu
+docker-compose exec database pg_dump -U postgres postgres > backup.sql
 
-# Restore database
-docker-compose exec database psql -U postgres evershop < backup.sql
+# Khôi phục cơ sở dữ liệu
+docker-compose exec database psql -U postgres postgres < backup.sql
 
-# View PostgreSQL logs
+# Xem nhật ký PostgreSQL
 docker-compose logs -f database
 ```
 
-### Execute Commands in Container
+### Thực Thi Lệnh Trong Container
 
 ```bash
-# Run command in app container
+# Chạy lệnh trong container app
 docker-compose exec app npm run lint
 
-# Run tests
+# Chạy test
 docker-compose exec app npm run test
 
-# Access app shell
+# Truy cập shell app
 docker-compose exec app sh
 
-# Install additional package
+# Cài đặt package bổ sung
 docker-compose exec app npm install package-name
 ```
 
-### Resource Management
+### Quản Lý Tài Nguyên
 
 ```bash
-# Check container resource usage
+# Kiểm tra sử dụng tài nguyên container
 docker stats
 
-# View image size
+# Xem kích thước image
 docker images evershop
 
-# Remove unused images
+# Xóa images không dùng
 docker image prune
 
-# Remove all Docker data
+# Xóa tất cả dữ liệu Docker
 docker system prune -a
 ```
 
 ---
 
-## Dockerfile Explanation
+## Giải Thích Dockerfile
 
-### Multi-Stage Build
+### Xây Dựng Nhiều Giai Đoạn
 
-Our Dockerfile uses two stages for optimization:
+Dockerfile của chúng tôi sử dụng một giai đoạn để tối ưu hóa:
 
-#### Stage 1: Builder (Compile & Build)
-```dockerfile
-FROM node:20-alpine AS builder
-# Install dependencies
-# Copy source code
-# Compile TypeScript
-# Build application
-# Result: ~500MB intermediate image
-```
-
-#### Stage 2: Production (Lightweight Runtime)
+#### Giai Đoạn: Sản Xuất
 ```dockerfile
 FROM node:20-alpine
-# Copy compiled files from builder (only what's needed)
-# Install dumb-init for signal handling
-# Create non-root user for security
-# Set health check
-# Result: ~150MB final image
+# Cài đặt dependencies
+# Sao chép mã nguồn
+# Biên dịch TypeScript
+# Xây dựng ứng dụng
+# Kết quả: ~200MB image cuối cùng
 ```
 
-### Key Features
+### Các Tính Năng Chính
 
-1. **Non-Root User**: Runs as `nodejs` user (not `root`) for security
-2. **Health Check**: Endpoint check every 30 seconds
-3. **Dumb-Init**: Proper signal handling for graceful shutdown
-4. **Multi-Stage**: Reduces final image size by ~70%
-5. **Alpine Base**: Lightweight base image (40MB vs 900MB for standard)
+1. **Cơ Sở Alpine**: Image cơ sở nhẹ (40MB so với 900MB cho phiên bản tiêu chuẩn)
+2. **Tối Ưu Hóa**: Kích thước image nhỏ gọn
+3. **Node.js v20**: Phiên bản Node hiện đại
 
-### Build Command
+### Lệnh Xây Dựng
 
 ```dockerfile
-ENTRYPOINT ["dumb-init", "--"]
 CMD ["npm", "run", "start"]
 ```
 
-Executes: `dumb-init npm run start`
+Thực thi: `npm run start`
 
-This ensures:
-- Process signals (SIGTERM, SIGINT) handled properly
-- Graceful shutdown on container stop
-- Child processes cleaned up
+Đảm bảo:
+- Ứng dụng khởi động đúng cách
+- Cấu hình đúng cho production
 
 ---
 
-## Environment Variables
+## Biến Môi Trường
 
-### Load from .env
+### Tải từ .env
 
-Create `.env` file from `.env.example`:
+Tạo tệp `.env` từ `.env.example`:
 
 ```bash
 cp .env.example .env
-# Edit values as needed
+# Chỉnh sửa giá trị nếu cần
 ```
 
-### Docker Compose Usage
+### Sử Dụng Docker Compose
 
 ```yaml
-# Load from .env automatically
+# Tải từ .env tự động
 environment:
   DB_HOST: database
-  DB_USER: ${DB_USER:-postgres}  # Use .env value or default to "postgres"
+  DB_USER: ${DB_USER:-postgres}  # Dùng giá trị .env hoặc mặc định "postgres"
   DB_PASSWORD: ${DB_PASSWORD:-postgres}
 ```
 
-### Override at Runtime
+### Ghi Đè Lúc Runtime
 
 ```bash
-# Via command line
+# Qua dòng lệnh
 docker-compose up -e NODE_ENV=production
 
-# Via env file
+# Qua tệp env
 docker-compose --env-file .env.production up
 
-# Via export
+# Qua export
 export NODE_ENV=production
 docker-compose up
 ```
 
-### Important Variables for Docker
+### Biến Quan Trọng cho Docker
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `DB_HOST` | `localhost` | Database hostname (use service name in Compose) |
-| `DB_PORT` | `5432` | PostgreSQL port |
-| `DB_USER` | `postgres` | PostgreSQL user |
-| `DB_PASSWORD` | `postgres` | PostgreSQL password |
-| `DB_NAME` | `evershop` | Database name |
-| `NODE_ENV` | `development` | Environment mode |
-| `PORT` | `3000` | Application port |
-| `REDIS_URL` | `redis://localhost:6379` | Redis connection |
+| Biến | Mặc Định | Mục Đích |
+|------|----------|---------|
+| `DB_HOST` | `database` | Tên máy chủ cơ sở dữ liệu |
+| `DB_PORT` | `5432` | Cổng PostgreSQL |
+| `DB_USER` | `postgres` | Người dùng PostgreSQL |
+| `DB_PASSWORD` | `postgres` | Mật khẩu PostgreSQL |
+| `DB_NAME` | `postgres` | Tên cơ sở dữ liệu |
+| `NODE_ENV` | `production` | Chế độ môi trường |
+| `PORT` | `3000` | Cổng ứng dụng |
 
-**⚠️ Important**: Never commit `.env` with real credentials to Git!
+**⚠️ Quan Trọng**: Không bao giờ commit `.env` với thông tin xác thực thực tế lên Git!
 
 ---
 
-## Network & Port Configuration
+## Cấu Hình Mạng & Cổng
 
-### Port Mapping
+### Ánh Xạ Cổng
 
 ```
-Host Port → Container Port
-3000      → 3000  (Application)
-5432      → 5432  (PostgreSQL)
-6379      → 6379  (Redis)
+Cổng Máy Host → Cổng Container
+3000         → 3000  (Ứng Dụng)
+5432         → 5432  (PostgreSQL)
 ```
 
-### Custom Port Mapping
+### Ánh Xạ Cổng Tùy Chỉnh
 
-Edit `docker-compose.yml`:
+Chỉnh sửa `docker-compose.yml`:
 
 ```yaml
 services:
   app:
     ports:
-      - "8000:3000"  # Change: http://localhost:8000
+      - "8000:3000"  # Thay đổi: http://localhost:8000
   database:
     ports:
-      - "5433:5432"  # PostgreSQL on 5433 instead of 5432
+      - "5433:5432"  # PostgreSQL trên 5433 thay vì 5432
 ```
 
-### Docker Network
+### Mạng Docker
 
-Services communicate via Docker network `evershop-network`:
+Các dịch vụ giao tiếp qua mạng Docker `evershop-network`:
 
 ```bash
-# From app container, connect to database:
-Host: database (not localhost or 127.0.0.1)
-Port: 5432 (internal port, not mapped)
+# Từ container app, kết nối tới cơ sở dữ liệu:
+Host: database (không phải localhost hoặc 127.0.0.1)
+Port: 5432 (cổng nội bộ, không được ánh xạ)
 
-# From host machine:
+# Từ máy chủ:
 Host: localhost
-Port: 5432 (mapped port)
+Port: 5432 (cổng được ánh xạ)
 ```
 
 ---
 
-## Troubleshooting
+## Khắc Phục Sự Cố
 
-### Port Already in Use
+### Cổng Đã Được Sử Dụng
 
-**Problem**: `Error: Bind for 0.0.0.0:3000 failed: port is already allocated`
+**Vấn Đề**: `Error: Bind for 0.0.0.0:3000 failed: port is already allocated`
 
-**Solution**:
+**Giải Pháp**:
 
 ```bash
-# Find process using port 3000
+# Tìm process sử dụng cổng 3000
 lsof -i :3000          # macOS/Linux
 netstat -ano | findstr :3000  # Windows
 
-# Option 1: Stop other process
+# Tùy Chọn 1: Dừng process khác
 kill -9 <PID>
 
-# Option 2: Use different port
+# Tùy Chọn 2: Dùng cổng khác
 docker-compose up -e PORT=3001
 
-# Option 3: Edit docker-compose.yml
-# Change: ports: ["3001:3000"]
+# Tùy Chọn 3: Chỉnh sửa docker-compose.yml
+# Thay đổi: ports: ["3001:3000"]
 ```
 
-### Container Crashes Immediately
+### Container Bị Crash Ngay Lập Tức
 
-**Problem**: Container exits with error code 1
+**Vấn Đề**: Container thoát với lỗi code 1
 
-**Solution**:
+**Giải Pháp**:
 
 ```bash
-# Check logs
+# Kiểm tra logs
 docker-compose logs app
 
-# Rebuild image
+# Xây dựng lại image
 docker-compose build --no-cache
 
-# Check environment variables
+# Kiểm tra biến môi trường
 cat .env
 
-# Rebuild and start
+# Xây dựng lại và khởi động
 docker-compose up --build
 ```
 
-### Database Connection Error
+### Lỗi Kết Nối Cơ Sở Dữ Liệu
 
-**Problem**: `Error: connect ECONNREFUSED 127.0.0.1:5432`
+**Vấn Đề**: `Error: connect ECONNREFUSED 127.0.0.1:5432`
 
-**Solution**:
+**Giải Pháp**:
 
 ```bash
-# Check database is running
+# Kiểm tra database có chạy
 docker-compose ps database
 
-# Check database logs
+# Kiểm tra logs database
 docker-compose logs database
 
-# Verify correct host (not localhost, use 'database')
-# In app container, connect to: database:5432
+# Xác minh host đúng (không phải localhost, dùng 'database')
+# Trong container app, kết nối tới: database:5432
 
-# Wait for database startup
+# Chờ database khởi động
 docker-compose up database
-# Wait for "database_1 ... ready to accept connections"
-# Then start app
+# Chờ "database_1 ... ready to accept connections"
+# Sau đó khởi động app
 ```
 
-### Volume Permission Error
+### Lỗi Quyền Hạn Volume
 
-**Problem**: `Error: EACCES: permission denied`
+**Vấn Đề**: `Error: EACCES: permission denied`
 
-**Solution**:
+**Giải Pháp**:
 
 ```bash
-# Check file permissions
+# Kiểm tra quyền hạn tệp
 ls -la
 
-# Fix ownership
+# Sửa quyền sở hữu
 sudo chown -R $USER:$USER .
 
-# Or recreate volume
+# Hoặc tạo lại volume
 docker-compose down -v
 docker-compose up -d
 ```
 
-### Disk Space Issues
+### Vấn Đề Không Gian Ổ Cứng
 
-**Problem**: `Error: No space left on device`
+**Vấn Đề**: `Error: No space left on device`
 
-**Solution**:
+**Giải Pháp**:
 
 ```bash
-# Check Docker disk usage
+# Kiểm tra sử dụng không gian Docker
 docker system df
 
-# Clean up unused resources
+# Dọn dẹp tài nguyên không dùng
 docker system prune
 
-# Remove all images and volumes
+# Xóa tất cả images và volumes
 docker system prune -a --volumes
 
-# Check system disk
+# Kiểm tra không gian ổ cứng hệ thống
 df -h
 ```
 
-### Hot Reload Not Working
+### Cập Nhật Nhanh Không Hoạt Động
 
-**Problem**: File changes not reflected in container
+**Vấn Đề**: Thay đổi tệp không được phản ánh trong container
 
-**Solution**:
+**Giải Pháp**:
 
 ```bash
-# Verify volume mount
+# Xác minh ánh xạ volume
 docker-compose config | grep -A5 volumes
 
-# Restart container
+# Khởi động lại container
 docker-compose restart app
 
-# Check file permissions
+# Kiểm tra quyền tệp
 ls -la packages/
 
-# For Windows/WSL2, use proper paths
-# Use unix-style paths in docker-compose.yml
+# Cho Windows/WSL2, dùng đường dẫn đúng
+# Dùng đường dẫn kiểu unix trong docker-compose.yml
 ```
 
 ---
 
-## Production Deployment
+## Triển Khai Production
 
-### Build Docker Image
+### Xây Dựng Docker Image
 
 ```bash
-# Build image locally
+# Xây dựng image trên máy cục bộ
 docker build -t evershop:latest .
 
-# Build with tag
+# Xây dựng với tag
 docker build -t evershop:1.0.0 .
 
-# Build with registry tag
+# Xây dựng với tag registry
 docker build -t ghcr.io/username/evershop:latest .
 ```
 
-### Push to Registry
+### Đẩy tới Registry
 
 #### GitHub Container Registry
 
 ```bash
-# Login
+# Đăng nhập
 echo $GITHUB_TOKEN | docker login ghcr.io -u username --password-stdin
 
-# Tag image
+# Gắn tag image
 docker tag evershop:latest ghcr.io/username/evershop:latest
 
-# Push
+# Đẩy
 docker push ghcr.io/username/evershop:latest
 ```
 
 #### Docker Hub
 
 ```bash
-# Login
+# Đăng nhập
 docker login
 
-# Tag image
+# Gắn tag image
 docker tag evershop:latest username/evershop:latest
 
-# Push
+# Đẩy
 docker push username/evershop:latest
 ```
 
-### Run in Production
+### Chạy Trong Production
 
 ```bash
-# Pull image
+# Kéo image
 docker pull ghcr.io/username/evershop:latest
 
-# Run container
+# Chạy container
 docker run -d \
   -p 80:3000 \
   -e DB_HOST=<your-db-host> \
@@ -623,9 +581,9 @@ docker run -d \
   ghcr.io/username/evershop:latest
 ```
 
-### Docker Compose for Production
+### Docker Compose cho Production
 
-Create `docker-compose.prod.yml`:
+Tạo `docker-compose.prod.yml`:
 
 ```yaml
 version: '3.8'
@@ -644,7 +602,7 @@ services:
       - database
 
   database:
-    image: postgres:16-alpine
+    image: postgres:16
     restart: always
     volumes:
       - postgres-prod:/var/lib/postgresql/data
@@ -652,83 +610,23 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
 ```
 
-Run:
+Chạy:
 
 ```bash
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
-### Monitoring & Logs
+### Giám Sát & Nhật Ký
 
 ```bash
-# View container logs
+# Xem nhật ký container
 docker logs evershop
 
-# Follow logs real-time
+# Theo dõi nhật ký thời gian thực
 docker logs -f evershop
 
-# View resource usage
+# Xem sử dụng tài nguyên
 docker stats evershop
-
-# Health check status
-docker inspect evershop --format='{{.State.Health}}'
 ```
 
 ---
-
-## Best Practices
-
-### Security
-
-- ✅ Use non-root user (already configured)
-- ✅ Never hardcode secrets in Dockerfile
-- ✅ Use secrets from environment variables or secrets manager
-- ✅ Scan image for vulnerabilities: `docker scan evershop`
-- ✅ Keep base images updated: `docker pull node:20-alpine`
-
-### Performance
-
-- ✅ Use Alpine images (smaller, faster)
-- ✅ Multi-stage builds (reduces final size)
-- ✅ Layer caching optimization
-- ✅ Health checks for monitoring
-- ✅ Resource limits in production
-
-### Development
-
-- ✅ Use volume mounts for hot reload
-- ✅ Keep node_modules in volume to avoid conflicts
-- ✅ Use `.dockerignore` to exclude unnecessary files
-- ✅ Rebuild only when package.json changes
-
----
-
-## Useful Resources
-
-- **Docker Docs**: https://docs.docker.com/
-- **Docker Compose**: https://docs.docker.com/compose/
-- **Node.js Docker**: https://github.com/nodejs/docker-node
-- **PostgreSQL Docker**: https://hub.docker.com/_/postgres
-- **Docker Best Practices**: https://docs.docker.com/develop/dev-best-practices/
-
----
-
-## Getting Help
-
-### Common Issues
-
-- **Port Issues**: See [Port Already in Use](#port-already-in-use)
-- **Database Connection**: See [Database Connection Error](#database-connection-error)
-- **File Permissions**: See [Volume Permission Error](#volume-permission-error)
-- **Space Issues**: See [Disk Space Issues](#disk-space-issues)
-
-### Community Resources
-
-- GitHub Issues: Post questions in repository issues
-- Docker Community: https://community.docker.com/
-- Stack Overflow: Tag questions with `docker` and `docker-compose`
-
----
-
-**Last Updated**: 2025
-**Version**: 1.0
