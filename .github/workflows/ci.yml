@@ -203,7 +203,7 @@ jobs:
           exit 1
 
       - name: Setup database
-        run: npm run setup
+        run: npx evershop install
         env:
           DB_HOST: localhost
           DB_PORT: 5432
