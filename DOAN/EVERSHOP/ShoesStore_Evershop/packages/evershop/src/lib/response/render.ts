@@ -3,7 +3,6 @@ import path from 'path';
 import { pathToFileURL } from 'url';
 import jsesc from 'jsesc';
 import { getNotifications } from '../../modules/base/services/notifications.js';
-import { getPageMetaInfo } from '../../modules/cms/services/pageMetaInfo.js';
 import { Config } from '../../types/appContext.js';
 import { EvershopRequest } from '../../types/request.js';
 import { EvershopResponse } from '../../types/response.js';
@@ -15,6 +14,8 @@ import isProductionMode from '../util/isProductionMode.js';
 import { processPreloadImages } from '../util/preloadScan.js';
 import { getValueSync } from '../util/registry.js';
 import { getRouteBuildPath } from '../webpack/getRouteBuildPath.js';
+
+const getPageMetaInfo = () => ({});
 
 function normalizeAssets(assets) {
   if (typeof assets === 'object' && !Array.isArray(assets) && assets !== null) {
