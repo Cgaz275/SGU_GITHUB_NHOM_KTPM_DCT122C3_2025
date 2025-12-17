@@ -30,7 +30,7 @@ Our pipeline automates:
 3. **Building** - Compile TypeScript and build application
 4. **Containerization** - Build and push Docker images
 5. **Notification** - Post status to GitHub Pull Requests
-
+s
 ### Benefits
 
 - ✅ **Automated Testing**: Every push runs tests automatically
