@@ -263,10 +263,11 @@ jobs:
             const lint = '${{ needs.lint.result }}' === 'success' ? '✅' : '❌';
             const test = '${{ needs.test.result }}' === 'success' ? '✅' : '❌';
             const build = '${{ needs.build.result }}' === 'success' ? '✅' : '❌';
-            const docker = '${{ needs.docker-build.result }}' === 'success' ? '✅' : '⏭️';
+            const docker_status = '${{ needs.docker-build.result }}';
+            const docker = docker_status === 'success' ? '✅' : docker_status === 'skipped' ? '⏭️' : '❌';
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## CI/CD Status\n${lint} Lint\n${test} Unit Tests\n${build} Build\n${docker} Docker Build (on merge)`
+              body: `## CI/CD Status\n${lint} Lint\n${test} Unit Tests\n${build} Build\n${docker} Docker Build (built on PR, pushed on merge to main)`
             });
