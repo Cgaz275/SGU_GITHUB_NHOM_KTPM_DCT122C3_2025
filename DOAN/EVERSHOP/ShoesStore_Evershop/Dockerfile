@@ -6,9 +6,6 @@ WORKDIR /app
 # Copy source code (including all package.json files for workspace resolution)
 COPY . .
 
-# Create optional directories if they don't exist
-RUN mkdir -p themes extensions config translations
-
 # Install dependencies
 RUN npm ci --workspaces --include-workspace-root && npm cache clean --force
 
@@ -30,13 +27,11 @@ RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 
 # Copy built application from builder
 COPY --from=builder --chown=nodejs:nodejs /app/packages ./packages
-COPY --from=builder --chown=nodejs:nodejs /app/themes ./themes
-COPY --from=builder --chown=nodejs:nodejs /app/extensions ./extensions
-COPY --from=builder --chown=nodejs:nodejs /app/public ./public
-COPY --from=builder --chown=nodejs:nodejs /app/config ./config
-COPY --from=builder --chown=nodejs:nodejs /app/translations ./translations
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
+
+# Create placeholder directories for optional components
+RUN mkdir -p themes extensions public config translations
 
 # Set environment variables
 ENV NODE_ENV=production
