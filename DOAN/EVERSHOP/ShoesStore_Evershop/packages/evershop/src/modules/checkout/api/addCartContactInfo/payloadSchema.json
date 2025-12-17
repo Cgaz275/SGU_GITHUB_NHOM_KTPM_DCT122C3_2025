@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email"
+    }
+  },
+  "required": ["email"],
+  "additionalProperties": true,
+  "errorMessage": {
+    "properties": {
+      "email": "Email is required"
+    }
+  }
+}
