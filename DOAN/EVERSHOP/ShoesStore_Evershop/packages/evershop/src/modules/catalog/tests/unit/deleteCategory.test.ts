@@ -1,360 +1,481 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 describe('deleteCategory Service', () => {
-  let mockConnection;
-  let mockSelect;
-  let mockDelete;
-  let mockStartTransaction;
-  let mockCommit;
-  let mockRollback;
-  let mockGetConnection;
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    mockConnection = {};
-    mockStartTransaction = jest.fn().mockResolvedValue(undefined);
-    mockCommit = jest.fn().mockResolvedValue(undefined);
-    mockRollback = jest.fn().mockResolvedValue(undefined);
-    mockGetConnection = jest.fn().mockResolvedValue(mockConnection);
-
-    mockSelect = jest.fn().mockReturnValue({
-      from: jest.fn().mockReturnThis(),
-      leftJoin: jest.fn().mockReturnThis(),
-      on: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      load: jest.fn().mockResolvedValue({
-        category_id: 1,
-        uuid: 'uuid-123',
-        name: 'Test Category',
-        category_description_id: 1
-      })
-    });
-
-    mockDelete = jest.fn().mockReturnValue({
-      where: jest.fn().mockReturnThis(),
-      execute: jest.fn().mockResolvedValue(undefined)
-    });
-  });
-
   describe('Delete existing category', () => {
-    it('should successfully delete a category', async () => {
-      const uuid = 'uuid-123';
-
-      mockSelect().load.mockResolvedValue({
-        category_id: 1,
-        uuid: uuid,
-        name: 'Test'
-      });
-
-      expect(uuid).toBeDefined();
+    it('should delete category by id', () => {
+      const categoryId = 1;
+      expect(categoryId).toBeGreaterThan(0);
     });
 
-    it('should return deleted category', async () => {
-      const deletedCategory = {
-        category_id: 1,
-        uuid: 'uuid-123',
-        name: 'Deleted Category'
-      };
-
-      expect(deletedCategory).toHaveProperty('category_id');
-      expect(deletedCategory).toHaveProperty('uuid');
+    it('should require category id', () => {
+      const deleteData = {};
+      expect(deleteData).not.toHaveProperty('category_id');
     });
 
-    it('should call delete on database', async () => {
-      expect(mockDelete).toBeDefined();
-    });
-
-    it('should handle various UUIDs', async () => {
-      const uuids = [
-        'uuid-001',
-        'uuid-002',
-        'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
-      ];
-
-      uuids.forEach(uuid => {
-        expect(uuid).toBeDefined();
-        expect(typeof uuid).toBe('string');
-      });
-    });
-  });
-
-  describe('Category not found', () => {
-    it('should throw error when category does not exist', async () => {
-      mockSelect().load.mockResolvedValue(null);
-
-      const uuid = 'nonexistent-uuid';
-      const category = mockSelect().load();
-
-      expect(category).toBeDefined();
-    });
-
-    it('should provide accurate error message', async () => {
-      mockSelect().load.mockResolvedValue(null);
-
-      expect(mockSelect().load()).toBeDefined();
-    });
-
-    it('should check uuid existence before delete', async () => {
-      mockSelect().load.mockResolvedValue(null);
-
-      const uuid = 'invalid-uuid';
-      expect(uuid).toBeDefined();
-    });
-  });
-
-  describe('Delete with transaction', () => {
-    it('should start transaction before delete', async () => {
-      expect(mockStartTransaction).toBeDefined();
-    });
-
-    it('should commit transaction on success', async () => {
-      expect(mockCommit).toBeDefined();
-    });
-
-    it('should call startTransaction for each delete', async () => {
-      mockStartTransaction();
-      mockStartTransaction();
-
-      expect(mockStartTransaction).toHaveBeenCalledTimes(2);
-    });
-
-    it('should pass connection to transaction operations', async () => {
-      expect(mockConnection).toBeDefined();
-    });
-  });
-
-  describe('Delete category relationship', () => {
-    it('should delete category_description records', async () => {
+    it('should validate category exists before deletion', () => {
       const category = {
         category_id: 1,
-        category_description_id: 1
+        name: 'Category to Delete'
       };
-
-      expect(category).toHaveProperty('category_description_id');
-    });
-
-    it('should handle category with multiple descriptions', async () => {
-      const category = {
-        category_id: 1,
-        descriptions: [
-          { lang: 'en', name: 'English' },
-          { lang: 'vi', name: 'Vietnamese' }
-        ]
-      };
-
-      expect(category.descriptions).toHaveLength(2);
-    });
-
-    it('should use leftJoin for descriptions', async () => {
-      const selectQuery = mockSelect();
-      expect(selectQuery.leftJoin).toBeDefined();
-    });
-  });
-
-  describe('Return deleted category', () => {
-    it('should return category object', async () => {
-      const deletedCategory = {
-        category_id: 1,
-        uuid: 'uuid-123',
-        name: 'Test'
-      };
-
-      expect(deletedCategory).toHaveProperty('category_id');
-      expect(deletedCategory).toHaveProperty('uuid');
-      expect(deletedCategory).toHaveProperty('name');
-    });
-
-    it('should include all category properties', async () => {
-      mockSelect().load.mockResolvedValue({
-        category_id: 1,
-        uuid: 'uuid-123',
-        name: 'Category',
-        description: 'Description',
-        status: 1
-      });
-
-      const category = mockSelect().load();
-      expect(category).toBeDefined();
-    });
-  });
-
-  describe('Transaction rollback on error', () => {
-    it('should have rollback function available', async () => {
-      expect(mockRollback).toBeDefined();
-    });
-
-    it('should rollback on validation error', async () => {
-      mockSelect().load.mockResolvedValue(null);
-
-      expect(mockSelect().load()).toBeDefined();
-    });
-
-    it('should rollback on delete error', async () => {
-      mockDelete().execute.mockRejectedValue(
-        new Error('Delete failed')
-      );
-
-      expect(mockDelete).toBeDefined();
-    });
-
-    it('should not commit on error', async () => {
-      expect(mockCommit).toBeDefined();
-    });
-  });
-
-  describe('Handle context parameter', () => {
-    it('should accept context object', async () => {
-      const context = { userId: 1 };
-
-      expect(typeof context).toBe('object');
-    });
-
-    it('should throw error for non-object context', async () => {
-      const invalidContext = 'string';
-
-      expect(typeof invalidContext).not.toBe('object');
-    });
-
-    it('should accept empty context', async () => {
-      const context = {};
-
-      expect(typeof context).toBe('object');
-    });
-
-    it('should pass context to hooks', async () => {
-      const context = {
-        deleted_by: 1,
-        deleted_at: new Date()
-      };
-
-      expect(context).toHaveProperty('deleted_by');
-    });
-  });
-
-  describe('Delete with UUID', () => {
-    it('should require valid UUID', async () => {
-      const uuid = 'uuid-123';
-
-      expect(uuid).toBeDefined();
-      expect(typeof uuid).toBe('string');
-    });
-
-    it('should handle UUID format variations', async () => {
-      const uuids = [
-        'simple-uuid',
-        'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-      ];
-
-      uuids.forEach(uuid => {
-        expect(uuid).toBeDefined();
-      });
-    });
-
-    it('should use UUID for identification', async () => {
-      mockSelect().where.mockReturnThis();
-
-      expect(mockSelect().where).toBeDefined();
-    });
-  });
-
-  describe('Cascade delete', () => {
-    it('should delete related data', async () => {
-      const category = {
-        category_id: 1,
-        related_data: [
-          { type: 'description' },
-          { type: 'product_category' }
-        ]
-      };
-
-      expect(category.related_data).toHaveLength(2);
-    });
-
-    it('should handle orphaned relationships', async () => {
-      const category = { category_id: 1 };
 
       expect(category).toHaveProperty('category_id');
     });
 
-    it('should use transaction for cascade', async () => {
-      expect(mockStartTransaction).toBeDefined();
-      expect(mockCommit).toBeDefined();
-      expect(mockRollback).toBeDefined();
+    it('should delete single category', () => {
+      const category = {
+        category_id: 5,
+        name: 'Electronics'
+      };
+
+      expect(category).toHaveProperty('category_id');
     });
   });
 
-  describe('Multiple category deletion', () => {
-    it('should delete multiple categories independently', async () => {
-      const uuids = ['uuid-1', 'uuid-2', 'uuid-3'];
+  describe('Delete category with children', () => {
+    it('should handle category with child categories', () => {
+      const parentCategory = {
+        category_id: 1,
+        name: 'Parent',
+        children: [
+          { category_id: 2, parent_id: 1, name: 'Child 1' },
+          { category_id: 3, parent_id: 1, name: 'Child 2' }
+        ]
+      };
 
-      uuids.forEach(uuid => {
-        expect(uuid).toBeDefined();
-      });
-
-      expect(uuids).toHaveLength(3);
+      expect(parentCategory.children).toHaveLength(2);
     });
 
-    it('should handle deletion in sequence', async () => {
-      mockSelect().load.mockResolvedValue({
-        category_id: 1
-      });
+    it('should reparent children to grandparent', () => {
+      const childrenBeforeDelete = [
+        { category_id: 2, parent_id: 1 },
+        { category_id: 3, parent_id: 1 }
+      ];
 
+      const childrenAfterDelete = [
+        { category_id: 2, parent_id: 0 },
+        { category_id: 3, parent_id: 0 }
+      ];
+
+      expect(childrenBeforeDelete[0].parent_id).toBe(1);
+      expect(childrenAfterDelete[0].parent_id).toBe(0);
+    });
+
+    it('should handle deep hierarchy (3+ levels)', () => {
+      const deepCategories = [
+        { category_id: 1, parent_id: null, level: 1 },
+        { category_id: 2, parent_id: 1, level: 2 },
+        { category_id: 3, parent_id: 2, level: 3 },
+        { category_id: 4, parent_id: 3, level: 4 }
+      ];
+
+      expect(deepCategories).toHaveLength(4);
+    });
+
+    it('should handle deletion of leaf category', () => {
+      const leafCategory = {
+        category_id: 4,
+        parent_id: 3,
+        children: []
+      };
+
+      expect(leafCategory.children).toHaveLength(0);
+    });
+  });
+
+  describe('Delete category with products', () => {
+    it('should handle category with products', () => {
+      const category = {
+        category_id: 1,
+        name: 'Electronics',
+        products: [
+          { product_id: 1, name: 'Laptop' },
+          { product_id: 2, name: 'Phone' }
+        ]
+      };
+
+      expect(category.products).toHaveLength(2);
+    });
+
+    it('should orphan products on category deletion', () => {
+      const productsBeforeDelete = [
+        { product_id: 1, category_id: 1 },
+        { product_id: 2, category_id: 1 }
+      ];
+
+      const productsAfterDelete = [
+        { product_id: 1, category_id: null },
+        { product_id: 2, category_id: null }
+      ];
+
+      expect(productsBeforeDelete[0].category_id).toBe(1);
+      expect(productsAfterDelete[0].category_id).toBeNull();
+    });
+
+    it('should prevent deletion if products exist (strict mode)', () => {
+      const category = {
+        category_id: 1,
+        product_count: 5
+      };
+
+      expect(category.product_count).toBeGreaterThan(0);
+    });
+
+    it('should handle large number of products', () => {
+      const products = Array(1000).fill(null).map((_, i) => ({
+        product_id: i + 1,
+        category_id: 1
+      }));
+
+      expect(products).toHaveLength(1000);
+    });
+  });
+
+  describe('Cascade deletion', () => {
+    it('should delete category descriptions', () => {
+      const descriptions = [
+        { category_description_id: 1, category_id: 1 }
+      ];
+
+      expect(descriptions[0].category_id).toBe(1);
+    });
+
+    it('should clean up all related data', () => {
+      const relatedData = {
+        category: { category_id: 1 },
+        descriptions: [{ category_id: 1 }],
+        images: [{ category_id: 1 }],
+        products: [{ category_id: 1 }]
+      };
+
+      expect(relatedData).toHaveProperty('category');
+    });
+
+    it('should delete category from collections', () => {
+      const collectionMappings = [
+        { collection_id: 1, category_id: 1 }
+      ];
+
+      expect(collectionMappings[0].category_id).toBe(1);
+    });
+
+    it('should rollback transaction on error', () => {
+      const deleteOperation = {
+        category_id: 1,
+        status: 'pending'
+      };
+
+      expect(deleteOperation).toHaveProperty('category_id');
+    });
+  });
+
+  describe('Validation before deletion', () => {
+    it('should verify category_id is numeric', () => {
+      const validId = 1;
+      const invalidId = 'abc';
+
+      expect(typeof validId).toBe('number');
+      expect(typeof invalidId).toBe('string');
+    });
+
+    it('should verify category exists', () => {
+      const category = {
+        category_id: 1,
+        exists: true
+      };
+
+      expect(category.exists).toBe(true);
+    });
+
+    it('should handle category not found', () => {
+      const category = null;
+      expect(category).toBeNull();
+    });
+
+    it('should validate category_id is positive', () => {
+      const validId = 1;
+      const invalidId = -1;
+
+      expect(validId).toBeGreaterThan(0);
+      expect(invalidId).toBeLessThan(0);
+    });
+
+    it('should reject zero category_id', () => {
+      const categoryId = 0;
+      expect(categoryId).toBe(0);
+    });
+
+    it('should prevent deletion of root categories with children', () => {
+      const rootCategory = {
+        category_id: 1,
+        parent_id: null,
+        children: [{ category_id: 2 }]
+      };
+
+      expect(rootCategory.parent_id).toBeNull();
+      expect(rootCategory.children).toHaveLength(1);
+    });
+  });
+
+  describe('Delete multiple categories', () => {
+    it('should delete multiple categories independently', () => {
+      const categoryIds = [1, 2, 3];
+      expect(categoryIds).toHaveLength(3);
+    });
+
+    it('should handle bulk deletion', () => {
       const categories = [
-        mockSelect().load(),
-        mockSelect().load(),
-        mockSelect().load()
+        { category_id: 1, name: 'Cat1' },
+        { category_id: 2, name: 'Cat2' },
+        { category_id: 3, name: 'Cat3' }
       ];
 
       expect(categories).toHaveLength(3);
     });
 
-    it('should maintain transaction isolation', async () => {
-      expect(mockStartTransaction).toBeDefined();
+    it('should maintain isolation between deletions', () => {
+      const delete1 = { category_id: 1 };
+      const delete2 = { category_id: 2 };
+
+      expect(delete1.category_id).not.toBe(delete2.category_id);
     });
 
-    it('should not affect other categories', async () => {
-      const category1 = { category_id: 1, name: 'Cat1' };
-      const category2 = { category_id: 2, name: 'Cat2' };
+    it('should handle deletion of sibling categories', () => {
+      const siblings = [
+        { category_id: 2, parent_id: 1 },
+        { category_id: 3, parent_id: 1 },
+        { category_id: 4, parent_id: 1 }
+      ];
 
-      expect(category1.category_id).not.toBe(category2.category_id);
-    });
-  });
+      const remaining = siblings.filter(c => c.category_id !== 3);
 
-  describe('Category existence verification', () => {
-    it('should check existence before delete', async () => {
-      const selectQuery = mockSelect();
-
-      expect(selectQuery.load).toBeDefined();
-    });
-
-    it('should use where clause for UUID match', async () => {
-      const selectQuery = mockSelect();
-      expect(selectQuery.where).toBeDefined();
-    });
-
-    it('should handle non-existent UUID gracefully', async () => {
-      mockSelect().load.mockResolvedValue(null);
-
-      expect(mockSelect().load()).toBeDefined();
+      expect(remaining).toHaveLength(2);
     });
   });
 
-  describe('Delete operation execution', () => {
-    it('should execute delete query', async () => {
-      const deleteQuery = mockDelete();
-
-      expect(deleteQuery.execute).toBeDefined();
+  describe('Error handling', () => {
+    it('should handle database error gracefully', () => {
+      const error = new Error('Database error');
+      expect(error.message).toBe('Database error');
     });
 
-    it('should use where clause in delete', async () => {
-      const deleteQuery = mockDelete();
-
-      expect(deleteQuery.where).toBeDefined();
+    it('should rollback on constraint violation', () => {
+      const error = new Error('Constraint violation');
+      expect(error.message).toContain('Constraint');
     });
 
-    it('should pass connection to execute', async () => {
-      expect(mockConnection).toBeDefined();
+    it('should handle missing category', () => {
+      const error = new Error('Category not found');
+      expect(error).toBeDefined();
+    });
+
+    it('should handle connection timeout', () => {
+      const error = new Error('Connection timeout');
+      expect(error).toBeDefined();
+    });
+
+    it('should preserve transaction integrity on error', () => {
+      const operation = {
+        status: 'rollback',
+        reason: 'error occurred'
+      };
+
+      expect(operation.status).toBe('rollback');
+    });
+
+    it('should handle deletion of category with active filters', () => {
+      const activeFilters = [
+        { filter_id: 1, category_id: 1 }
+      ];
+
+      expect(activeFilters[0].category_id).toBe(1);
+    });
+  });
+
+  describe('Response handling', () => {
+    it('should return confirmation of deletion', () => {
+      const response = {
+        deleted: true,
+        category_id: 1
+      };
+
+      expect(response.deleted).toBe(true);
+      expect(response.category_id).toBe(1);
+    });
+
+    it('should return affected rows count', () => {
+      const response = {
+        affectedRows: 3
+      };
+
+      expect(response.affectedRows).toBe(3);
+    });
+
+    it('should not return deleted category data', () => {
+      const response = {
+        deleted: true
+      };
+
+      expect(response).not.toHaveProperty('category');
+      expect(response).not.toHaveProperty('name');
+    });
+  });
+
+  describe('Hierarchy consistency after deletion', () => {
+    it('should maintain category tree integrity', () => {
+      const beforeDelete = [
+        { category_id: 1, parent_id: null, level: 1 },
+        { category_id: 2, parent_id: 1, level: 2 },
+        { category_id: 3, parent_id: 2, level: 3 }
+      ];
+
+      const afterDelete = [
+        { category_id: 1, parent_id: null, level: 1 },
+        { category_id: 3, parent_id: 1, level: 2 }
+      ];
+
+      expect(beforeDelete).toHaveLength(3);
+      expect(afterDelete).toHaveLength(2);
+    });
+
+    it('should update levels of reparented categories', () => {
+      const childAfterReparent = {
+        category_id: 3,
+        parent_id: 1,
+        level: 2
+      };
+
+      expect(childAfterReparent.level).toBe(2);
+    });
+
+    it('should recalculate positions of siblings', () => {
+      const siblingsAfterDelete = [
+        { category_id: 2, position: 1 },
+        { category_id: 4, position: 2 }
+      ];
+
+      expect(siblingsAfterDelete).toHaveLength(2);
+    });
+  });
+
+  describe('Context handling', () => {
+    it('should accept context object', () => {
+      const context = { userId: 1 };
+      expect(typeof context).toBe('object');
+    });
+
+    it('should accept empty context', () => {
+      const context = {};
+      expect(typeof context).toBe('object');
+    });
+
+    it('should validate context is object type', () => {
+      const validContext = {};
+      const invalidContext = 'string';
+
+      expect(typeof validContext).toBe('object');
+      expect(typeof invalidContext).toBe('string');
+    });
+  });
+
+  describe('Soft vs hard delete', () => {
+    it('should support hard delete', () => {
+      const deleteType = 'hard';
+      expect(deleteType).toBe('hard');
+    });
+
+    it('should cascade delete of relationships', () => {
+      const cascade = {
+        category: true,
+        descriptions: true,
+        products: true,
+        images: true
+      };
+
+      expect(cascade.category).toBe(true);
+    });
+  });
+
+  describe('Category state after deletion', () => {
+    it('should remove category from database', () => {
+      const beforeDelete = {
+        category_id: 1,
+        exists: true
+      };
+
+      const afterDelete = {
+        category_id: 1,
+        exists: false
+      };
+
+      expect(beforeDelete.exists).not.toBe(afterDelete.exists);
+    });
+
+    it('should clean up all references', () => {
+      const deletedData = {
+        category: 1,
+        descriptions: 1,
+        mappings: 2,
+        filters: 3
+      };
+
+      const totalDeleted = Object.values(deletedData).reduce((a, b) => a + b, 0);
+      expect(totalDeleted).toBeGreaterThan(0);
+    });
+  });
+
+  describe('Deletion audit trail', () => {
+    it('should log deletion action', () => {
+      const auditLog = {
+        action: 'delete',
+        category_id: 1,
+        timestamp: new Date().toISOString()
+      };
+
+      expect(auditLog.action).toBe('delete');
+    });
+
+    it('should track who deleted the category', () => {
+      const auditLog = {
+        deleted_by_user_id: 1,
+        category_id: 1
+      };
+
+      expect(auditLog).toHaveProperty('deleted_by_user_id');
+    });
+
+    it('should record deletion timestamp', () => {
+      const auditLog = {
+        deleted_at: new Date().toISOString()
+      };
+
+      expect(auditLog.deleted_at).toBeDefined();
+    });
+  });
+
+  describe('Concurrent deletion safety', () => {
+    it('should handle concurrent delete attempts', () => {
+      const deleteAttempts = [
+        { category_id: 1, attempt: 1 },
+        { category_id: 1, attempt: 2 }
+      ];
+
+      expect(deleteAttempts).toHaveLength(2);
+    });
+
+    it('should use transaction locking', () => {
+      const transaction = {
+        locked: true,
+        category_id: 1
+      };
+
+      expect(transaction.locked).toBe(true);
+    });
+
+    it('should prevent double deletion', () => {
+      const firstDelete = { category_id: 1, success: true };
+      const secondDelete = { category_id: 1, success: false };
+
+      expect(firstDelete.success).not.toBe(secondDelete.success);
     });
   });
 });

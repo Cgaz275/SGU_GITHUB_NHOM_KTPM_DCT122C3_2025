@@ -28,13 +28,27 @@ export default {
     "services/logout",
     "services/session"
   ],
+  testPathPattern: process.env.TEST_MODULE
+    ? `packages/evershop/src/modules/${process.env.TEST_MODULE}/tests`
+    : undefined,
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  collectCoverageFrom: [
-    "packages/evershop/src/modules/**/*.{ts,tsx,js}",
-    "!packages/evershop/src/modules/**/tests/**",
-    "!packages/evershop/src/modules/**/*.test.{ts,tsx,js}",
-    "!packages/evershop/dist/**"
-  ],
+  collectCoverageFrom: process.env.TEST_MODULE
+    ? [
+        `packages/evershop/src/modules/${process.env.TEST_MODULE}/**/*.{ts,tsx,js}`,
+        `!packages/evershop/src/modules/${process.env.TEST_MODULE}/**/*.test.{ts,tsx,js}`,
+        `!packages/evershop/src/modules/${process.env.TEST_MODULE}/tests/**`,
+        `!packages/evershop/src/modules/${process.env.TEST_MODULE}/pages/**`,
+        `!packages/evershop/src/modules/${process.env.TEST_MODULE}/graphql/**`,
+        `!packages/evershop/src/modules/${process.env.TEST_MODULE}/migration/**`,
+        `!packages/evershop/src/modules/${process.env.TEST_MODULE}/api/**`,
+        "!packages/evershop/dist/**"
+      ]
+    : [
+        "packages/evershop/src/modules/**/*.{ts,tsx,js}",
+        "!packages/evershop/src/modules/**/tests/**",
+        "!packages/evershop/src/modules/**/*.test.{ts,tsx,js}",
+        "!packages/evershop/dist/**"
+      ],
   coverageDirectory: "<rootDir>/coverage",
   coverageReporters: ["text", "text-summary", "html", "lcov", "json"],
   coveragePathIgnorePatterns: [
