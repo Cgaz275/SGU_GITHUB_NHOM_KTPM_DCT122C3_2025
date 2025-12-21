@@ -40,16 +40,10 @@ interface HeadTagsProps {
 }
 export default function HeadTags({
   pageInfo: { title, description, keywords, canonicalUrl, ogInfo, favicon },
-  themeConfig = {
-    headTags: {
-      metas: [],
-      links: [],
-      scripts: [],
-      base: undefined
-    }
+  themeConfig: {
+    headTags: { metas, links, scripts, base }
   }
 }: HeadTagsProps) {
-  const { metas = [], links = [], scripts = [], base } = themeConfig?.headTags || {};
   React.useEffect(() => {
     const head = document.querySelector('head');
     scripts.forEach((script) => {

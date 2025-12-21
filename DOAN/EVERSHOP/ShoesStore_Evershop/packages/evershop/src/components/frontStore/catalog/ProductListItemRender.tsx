@@ -26,10 +26,10 @@ export const ProductListItemRender = ({
       <div className="product__list__item__inner group relative overflow-hidden flex gap-4 p-4">
         <div className="product__list__image flex-shrink-0">
           <a href={product.url}>
-            {product.image && product.image.url && (
+            {product.image && (
               <Image
                 src={product.image.url}
-                alt={(product.image.alt || product.name) as string}
+                alt={product.image.alt || product.name}
                 width={imageWidth || 120}
                 height={imageHeight || 120}
                 loading="lazy"
@@ -146,10 +146,10 @@ export const ProductListItemRender = ({
     <div className="product__list__item__inner group overflow-hidden">
       <a href={product.url} className="product__list__link block">
         <div className="product__list__image overflow-hidden flex w-full justify-center">
-          {product.image && product.image.url && (
+          {product.image && (
             <Image
               src={product.image.url}
-              alt={(product.image.alt || product.name) as string}
+              alt={product.image.alt || product.name}
               width={imageWidth || 120}
               height={imageHeight || 120}
               sizes="(max-width: 768px) 100vw, 33vw" // Assume 3 columns on larger screens

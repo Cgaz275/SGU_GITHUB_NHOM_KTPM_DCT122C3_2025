@@ -50,10 +50,6 @@ const Image: React.FC<{
 }> = ({ data, columnSize }) => {
   const { file, caption, withBorder, withBackground, stretched, link } = data;
 
-  if (!file || !file.url) {
-    return null;
-  }
-
   const imageStyles = {
     border: withBorder ? '1px solid #ccc' : 'none',
     backgroundColor: withBackground ? '#f9f9f9' : 'transparent',

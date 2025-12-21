@@ -1,3 +1,8 @@
+import { setPageMetaInfo } from '../../../../cms/services/pageMetaInfo.js';
+
 export default (request) => {
-  // Store setting page
+  setPageMetaInfo(request, {
+    title: 'Store Setting',
+    description: 'Store Setting'
+  });
 };

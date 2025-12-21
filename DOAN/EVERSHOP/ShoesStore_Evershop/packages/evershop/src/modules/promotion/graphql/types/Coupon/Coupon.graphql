@@ -1,0 +1,6 @@
+scalar JSON
+
+extend type Cart {
+  applyCouponApi: String!
+  removeCouponApi: String
+}

@@ -44,13 +44,6 @@ export function buildMiddlewareFunction(id, path) {
   } else {
     return async (request, response, next) => {
       const startTime = process.hrtime();
-       // 🔥 Ensure currentRoute always exists
-      if (!request.currentRoute) {
-        request.currentRoute = {
-          id: 'global',
-          isAdmin: false
-        };
-      }
       const debuging = {
         id
       };
