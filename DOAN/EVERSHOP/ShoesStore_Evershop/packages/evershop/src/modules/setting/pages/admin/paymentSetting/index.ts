@@ -1,3 +1,8 @@
+import { setPageMetaInfo } from '../../../../cms/services/pageMetaInfo.js';
+
 export default (request) => {
-  // Payment setting page
+  setPageMetaInfo(request, {
+    title: 'Payment Setting',
+    description: 'Payment Setting'
+  });
 };

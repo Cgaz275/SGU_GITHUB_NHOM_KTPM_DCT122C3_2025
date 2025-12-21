@@ -1,5 +1,4 @@
 {
   "methods": ["GET"],
-  "path": "/setting/payments",
-  "id": "paymentSetting"
+  "path": "/setting/payments"
 }

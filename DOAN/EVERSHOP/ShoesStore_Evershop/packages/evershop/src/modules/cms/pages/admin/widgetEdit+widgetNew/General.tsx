@@ -25,6 +25,14 @@ const AreaInput: React.FC<{
 }> = ({ values, control }) => {
   const [inputValue, setInputValue] = React.useState('');
 
+  const commonAreas = [
+    { label: 'content', value: 'content' },
+    { label: 'sidebar', value: 'sidebar' },
+    { label: 'header', value: 'header' },
+    { label: 'footer', value: 'footer' },
+    { label: 'hero', value: 'hero' }
+  ];
+
   const handleKeyDown = (event, onChange, value) => {
     if (!inputValue) return;
     switch (event.key) {
@@ -47,11 +55,10 @@ const AreaInput: React.FC<{
       defaultValue={values.map((v) => v.value)}
       render={({ field }) => (
         <CreatableSelect
-          components={components}
           inputValue={inputValue}
           isClearable
           isMulti
-          menuIsOpen={false}
+          options={commonAreas}
           onChange={(newValue) => {
             const stringArray = newValue
               ? newValue.map((option) => option.value)
